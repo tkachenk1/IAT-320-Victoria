@@ -1,3 +1,5 @@
+#Use external files in this repositpry (emptytrash.wav , pastmove.wav,send.wav, airdrop.wav, camera.wav)
+
 import board
 import time
 from adafruit_circuitplayground.express import cpx
