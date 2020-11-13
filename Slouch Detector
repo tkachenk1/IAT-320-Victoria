@@ -1,0 +1,46 @@
+import time
+import math
+from adafruit_circuitplayground.express import cpx
+
+SLOUCH_ANGLE    = 10.0
+SLOUCH_TIME     = 3
+GRAVITY         = 9.80665
+
+# Initialize target angle to zero
+target_angle = 0
+slouching = False
+cpx.pixels.brightness = 0.3
+
+# Loop forever
+while True:
+    # Compute current angle
+    current_angle = math.asin(-cpx.acceleration[2] / GRAVITY)
+    current_angle = math.degrees(current_angle)
+
+    # Set target angle on button press
+    if cpx.button_a or cpx.button_b:
+        target_angle = current_angle
+        cpx.pixels.fill((0, 255, 0))
+        cpx.play_file("targetangle01.wav")
+        time.sleep(0.1)
+        cpx.pixels.fill((0, 0, 0))
+
+
+    # Check for slouching
+    if current_angle - target_angle > SLOUCH_ANGLE:
+        if not slouching:
+            slouch_start_time = time.monotonic()
+        slouching = True
+    else:
+        slouching = False
+
+    # If we are slouching
+    if slouching:
+        # Check how long we've been slouching
+        if time.monotonic() - slouch_start_time > SLOUCH_TIME:
+            # Play a tone
+            cpx.pixels.fill((255, 0, 0))
+            time.sleep(0.1)
+            cpx.play_file("reminder.wav")
+        else:
+            cpx.pixels.fill((0, 0, 0))
